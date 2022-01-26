@@ -1,5 +1,6 @@
 import functions as func
 import tkinter as tk
+import resultpage as rp
 
 '''
 In this Page, we have all the configuration to the front end that the Page is going to need
@@ -102,5 +103,5 @@ def main(app: tk):
     cb_09.place(x=200, y=70, w=100, h=20)
 
     # Button -> Configuration and Placing
-    bt = tk.Button(app, text='Gerar Questões', command=func.impDados)
+    bt = tk.Button(app, text='Gerar Questões', command=rp.main)
     bt.place(x=120, y=250, w=100, h=20)
