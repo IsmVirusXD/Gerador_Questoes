@@ -68,7 +68,7 @@ def getProblems(NQuestions:int, themes:list[int]):
         value = rng.randint(0, maxNumProblems[theme]-1)
         page  = (value//25)+1
         index = value%25
-        
+        #TODO: Fazer algo
         theme+= 1 #corrégi o curso
         result.append((theme, page, index))
     
