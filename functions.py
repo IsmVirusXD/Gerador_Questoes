@@ -23,7 +23,7 @@ def impDados():
     print("09 - {}".format(stng.check09.get()))
 
 
-def getDados() -> list[Union[str, bool]]:
+def getDados() -> list:
     '''
     Return all the Configuration from the Filter (settingspage.py))
     '''
@@ -44,7 +44,8 @@ def getDados() -> list[Union[str, bool]]:
 
     return(dados)
 
-def _getMaxProblems(themes:list[int]) -> int:
+
+def _getMaxProblems(themes: list) -> int:
     import bs4
     import requests
 
@@ -54,11 +55,12 @@ def _getMaxProblems(themes:list[int]) -> int:
     result = []
     for theme in themes:
         themeName = f"category-{theme}"
-        result.append(int(soup.find("li", {"class":themeName}).find("b").text.split()[0]))
+        result.append(
+            int(soup.find("li", {"class": themeName}).find("b").text.split()[0]))
     return result
 
 
-def getProblems(NQuestions:int, themes:list[int]):
+def getProblems(NQuestions: int, themes: list):
     rng = Random()
     maxNumProblems = _getMaxProblems(themes)
     result = []
@@ -66,24 +68,24 @@ def getProblems(NQuestions:int, themes:list[int]):
     while len(result) < NQuestions:
         theme = rng.randint(0, len(maxNumProblems)-1)
         value = rng.randint(0, maxNumProblems[theme]-1)
-        page  = (value//25)+1
-        index = value%25
-        
-        theme+= 1 #corrégi o curso
+        page = (value//25)+1
+        index = value % 25
+
+        theme += 1  # corrégi o curso
         result.append((theme, page, index))
-    
+
     response = dict()
     for theme, page, index in result:
         if (theme, page) in response:
             response[(theme, page)].append(index)
         else:
             response[(theme, page)] = [index]
-    
+
     result = []
     for key, indexes in response.items():
         theme, page = key
         result.append((theme, page, indexes))
-    
+
     response = []
     for theme, page, indexes in result:
         for item in _getProblems(theme, page, indexes):
@@ -91,7 +93,8 @@ def getProblems(NQuestions:int, themes:list[int]):
 
     return response
 
-def _getProblems(theme: int, page: int, indexes:list[int]) -> list:
+
+def _getProblems(theme: int, page: int, indexes: list) -> list:
     '''
     Return the Code, Name and the Dificult
     '''
@@ -107,17 +110,18 @@ def _getProblems(theme: int, page: int, indexes:list[int]) -> list:
     values = list(soup.tbody.findAll('tr'))
     for i in indexes:
         value = values[i]
-        dif = list(value.findAll("td", {"class":"tiny"}))[1].text
+        dif = list(value.findAll("td", {"class": "tiny"}))[1].text
 
-        data = [ value.find("td", {"class":"id"}).a.text,
-        value.find("td", {"class":"large"}).a.text,
-        value.a['href'],
-        dif]
+        data = [value.find("td", {"class": "id"}).a.text,
+                value.find("td", {"class": "large"}).a.text,
+                value.a['href'],
+                dif]
         lst.append(data)
 
     return lst
 
-def setCofig() -> list[int]:
+
+def setCofig() -> list:
     dados = getDados()
     lista = []
 
@@ -139,6 +143,5 @@ def setCofig() -> list[int]:
         lista.append(8)
     if dados[9]:
         lista.append(9)
-
 
     return lista
