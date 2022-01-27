@@ -103,5 +103,5 @@ def main(app: tk):
     cb_09.place(x=200, y=70, w=100, h=20)
 
     # Button -> Configuration and Placing
-    bt = tk.Button(app, text='Gerar Questões', command=rp.main)
+    bt = tk.Button(app, text='Gerar Questões', command=lambda: rp.main(int(NQuest.get())))
     bt.place(x=120, y=250, w=100, h=20)
