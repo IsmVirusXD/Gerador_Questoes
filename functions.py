@@ -1,3 +1,8 @@
+from distutils.core import run_setup
+from random import Random
+from typing import Union
+
+from pkg_resources import ResolutionError
 import settingspage as stng
 
 
@@ -18,7 +23,7 @@ def impDados():
     print("09 - {}".format(stng.check09.get()))
 
 
-def getDados() -> []:
+def getDados() -> list[Union[str, bool]]:
     '''
     Return all the Configuration from the Filter (settingspage.py))
     '''
@@ -39,8 +44,54 @@ def getDados() -> []:
 
     return(dados)
 
+def _getMaxProblems(themes:list[int]) -> int:
+    import bs4
+    import requests
 
-def getProblems(index: int, page: int) -> list:
+    html_doc = requests.get(f"https://www.beecrowd.com.br/judge/pt/categories")
+    soup = bs4.BeautifulSoup(html_doc.text, 'html.parser')
+
+    result = []
+    for theme in themes:
+        themeName = f"category-{theme}"
+        result.append(int(soup.find("li", {"class":themeName}).find("b").text.split()[0]))
+    return result
+
+
+def getProblems(NQuestions:int, themes:list[int]):
+    rng = Random()
+    maxNumProblems = _getMaxProblems(themes)
+    result = []
+
+    while len(result) < NQuestions:
+        theme = rng.randint(0, len(maxNumProblems)-1)
+        value = rng.randint(0, maxNumProblems[theme]-1)
+        page  = (value//25)+1
+        index = value%25
+        
+        theme+= 1 #corrégi o curso
+        result.append((theme, page, index))
+    
+    response = dict()
+    for theme, page, index in result:
+        if (theme, page) in response:
+            response[(theme, page)].append(index)
+        else:
+            response[(theme, page)] = [index]
+    
+    result = []
+    for key, indexes in response.items():
+        theme, page = key
+        result.append((theme, page, indexes))
+    
+    response = []
+    for theme, page, indexes in result:
+        for item in _getProblems(theme, page, indexes):
+            response.append(item)
+
+    return response
+
+def _getProblems(theme: int, page: int, indexes:list[int]) -> list:
     '''
     Return the Code, Name and the Dificult
     '''
@@ -48,54 +99,46 @@ def getProblems(index: int, page: int) -> list:
     import requests
 
     html_doc = requests.get(
-        f"https://www.beecrowd.com.br/judge/pt/problems/index/{index}?page={page}")
+        f"https://www.beecrowd.com.br/judge/pt/problems/index/{theme}?page={page}")
     soup = BeautifulSoup(html_doc.text, 'html.parser')
 
     lst = []
-    data: str
 
-    for values in soup.tbody.findAll('td'):
-        # ID
-        if values['class'] == ['id']:
-            data = ''
-            data = values.a.text + '|'
+    values = list(soup.tbody.findAll('tr'))
+    for i in indexes:
+        value = values[i]
+        dif = list(value.findAll("td", {"class":"tiny"}))[1].text
 
-        # Name
-        if values['class'] == ['large']:
-            data = data + values.a.text + '|' + values.a['href'] + '|'
-
-        # Dificult
-        if values['class'] == ['tiny'] and values.text.isnumeric():
-            data = data + values.text
-            v = data.split('|')
-            lst.append(v)
+        data = [ value.find("td", {"class":"id"}).a.text,
+        value.find("td", {"class":"large"}).a.text,
+        value.a['href'],
+        dif]
+        lst.append(data)
 
     return lst
 
-
-def setCofig() -> []:
+def setCofig() -> list[int]:
     dados = getDados()
     lista = []
 
     if dados[1]:
-        lista.append(stng.check01.text())
+        lista.append(1)
     if dados[2]:
-        lista.append(stng.check02.text())
+        lista.append(2)
     if dados[3]:
-        lista.append(stng.check03.text())
+        lista.append(3)
     if dados[4]:
-        lista.append(stng.check04.text())
+        lista.append(4)
     if dados[5]:
-        lista.append(stng.check05.text())
+        lista.append(5)
     if dados[6]:
-        lista.append(stng.check06.text())
+        lista.append(6)
     if dados[7]:
-        lista.append(stng.check07.text())
+        lista.append(7)
     if dados[8]:
-        lista.append(stng.check08.text())
+        lista.append(8)
     if dados[9]:
-        lista.append(stng.check09.text())
+        lista.append(9)
 
-    print(lista)
 
     return lista

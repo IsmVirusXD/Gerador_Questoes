@@ -2,7 +2,7 @@ import functions as func
 import tkinter as tk
 
 
-def main():
+def main(NQuestions:int):
     top = tk.Toplevel()
     top.title("Resultado da Pesquisa")
 
@@ -16,20 +16,22 @@ def main():
     data = func.getDados()
    #value = int(data[0])
 
-    banco_de_dados = func.getProblems(1, 2)
+    themes = func.setCofig()
+    banco_de_dados = func.getProblems(NQuestions, themes)
 
     label01 = tk.Label(top, text="Indice", anchor='w')
     label01.grid(row=0, column=0)
 
-    label02 = tk.Label(top, text="Problema", anchor='w')
-    label02.grid(row=0, column=2)
-
-    label03 = tk.Label(top, text="Link", anchor='w')
-    label03.grid(row=0, column=3)
-
     label03 = tk.Label(top, text="Dificuldade", anchor='w')
     label03.grid(row=0, column=1)
 
+    label02 = tk.Label(top, text="Problema", anchor='w')
+    label02.grid(row=0, column=2)
+
+    label04 = tk.Label(top, text="Link", anchor='w')
+    label04.grid(row=0, column=3)
+
+    print(banco_de_dados)
     for i in banco_de_dados:
         x = x + 1
         indice = tk.Label(top, text=i[0], anchor='w')
@@ -43,5 +45,3 @@ def main():
 
         difc = tk.Label(top, text=i[3], anchor='w')
         difc.grid(row=x, column=1)
-
-
