@@ -64,12 +64,11 @@ def getProblems(NQuestions:int, themes:list[int]):
     result = []
 
     while len(result) < NQuestions:
-        theme = rng.randint(0, len(maxNumProblems)-1)
-        value = rng.randint(0, maxNumProblems[theme]-1)
+        _theme = rng.randint(0, len(maxNumProblems)-1)
+        value = rng.randint(0, maxNumProblems[_theme]-1)
         page  = (value//25)+1
         index = value%25
-        #TODO: Fazer algo
-        theme+= 1 #corrégi o curso
+        theme = themes[_theme] #corrégi o curso
         result.append((theme, page, index))
     
     response = dict()
